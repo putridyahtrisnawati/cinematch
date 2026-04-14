@@ -1,26 +1,36 @@
-# CINEMATCH
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Nama Kelompok
-Team Syantik
+## Getting Started
 
-## Nama Anggota
-1. Putri Dyah Trisnawati – Project Manager
-2. Niken Ayu Anggraini – Frontend Developer
-3. Adinda Amelia Putri – Backend Developer
+First, run the development server:
 
-## Deskripsi Cinematch
-CineMatch adalah aplikasi pemesanan tiket bioskop berbasis web yang dirancang untuk memudahkan pengguna dalam mencari informasi film, melihat jadwal tayang, serta melakukan pemesanan tiket secara online dengan cepat, praktis, dan efisien.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## Tech Stack
-1. Frontend: Next.js & Tailwind CSS
-2. Backend: Next.js
-3. Database: Mongo db
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Fitur Utama
-1. Autentikasi Pengguna: Registrasi akun & Login pengguna
-2. Informasi Film: Daftar film (Now Playing & Coming Soon), Detail film (judul, genre, durasi, promo), Jadwal tayang film
-3. Pemesanan Tiket: Pemilihan jadwal tayang, Pemilihan kursi (real-time), Melihat ketersediaan kursi, Perhitungan total harga otomatis
-4. Pembayaran: Metode pembayaran menggunakan saldo (top up) & Konfirmasi pembayaran
-5. E-Ticket & Riwayat: Tiket digital (QR Code / Barcode), Detail tiket, Riwayat pemesanan
-6. Promo & Voucher: Melihat promo yang tersedia & Menggunakan promo saat booking
-7. Pengaturan Akun: Edit profil & Ubah passwordLogout
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
