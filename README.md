@@ -14,7 +14,7 @@ CineMatch adalah aplikasi pemesanan tiket bioskop berbasis web yang dirancang un
 ## Tech Stack
 1. Frontend: Next.js & Tailwind CSS
 2. Backend: Next.js
-3. Database: MySQL Cloud
+3. Database: Mongo db
 
 ## Fitur Utama
 1. Autentikasi Pengguna: Registrasi akun & Login pengguna
