@@ -7,7 +7,8 @@ export default function LeftBanner() {
         <Image
           src="/cinema-register.jpg"
           fill
-          sizes="100vw"
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          priority
           className="object-cover"
           alt="cinema"
         />
