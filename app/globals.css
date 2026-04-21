@@ -11,20 +11,35 @@ body {
   color: var(--on-surface);
 }
 
-/* Gradient reusable */
+/* Gradient */
 .cinematic-gradient {
-  background: linear-gradient(
-    to right,
-    rgba(4, 19, 41, 0.4),
-    rgba(4, 19, 41, 1)
-  );
+  background: linear-gradient(to right,
+      rgba(4, 19, 41, 0.4),
+      rgba(4, 19, 41, 1));
 }
 
 .hero-gradient {
-  background: linear-gradient(
-    0deg,
-    #041329 0%,
-    rgba(4, 19, 41, 0.6) 50%,
-    rgba(4, 19, 41, 0.8) 100%
-  );
+  background: linear-gradient(0deg,
+      #041329 0%,
+      rgba(4, 19, 41, 0.6) 50%,
+      rgba(4, 19, 41, 0.8) 100%);
+}
+
+/* ICON */
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+/* 🔥 SCROLLBAR FIX */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

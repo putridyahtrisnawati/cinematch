@@ -26,6 +26,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="id"
       className={`${geistSans.variable} ${geistMono.variable} ${jakarta.variable} ${manrope.variable}`}
     >
+      {/* ✅ TAMBAHKAN DI SINI */}
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+          rel="stylesheet"
+        />
+      </head>
+
       <body className="min-h-screen bg-background text-on-surface">
         {children}
       </body>
