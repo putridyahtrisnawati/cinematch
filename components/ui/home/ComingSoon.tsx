@@ -59,3 +59,4 @@ export default function ComingSoon({ movies }: any) {
     </section>
   );
 }
+
