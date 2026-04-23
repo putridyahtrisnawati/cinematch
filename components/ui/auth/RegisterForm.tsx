@@ -58,7 +58,7 @@ export default function RegisterForm() {
 
       alert("Register berhasil!");
 
-      // reset form
+      // Reset Form
       setForm({
         username: "",
         email: "",
@@ -191,3 +191,4 @@ export default function RegisterForm() {
     </div>
   );
 }
+
