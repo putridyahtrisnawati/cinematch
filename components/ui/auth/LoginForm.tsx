@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
 import PasswordInput from "./PasswordInput";
 
 export default function LoginForm() {
+    const router = useRouter();
     const [form, setForm] = useState({
         email: "",
         password: ""
@@ -17,10 +19,48 @@ export default function LoginForm() {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("Login Data:", form);
-        // TODO: connect ke backend
+
+        if (!form.email || !form.password) {
+            alert("Semua field wajib diisi");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(form),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                alert(data.message || "Login gagal");
+                return;
+            }
+
+            alert("Login berhasil!");
+
+            // simpan user ke localStorage (sementara)
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            // redirect ke halaman utama
+            router.push("/");
+
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Terjadi kesalahan");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -71,9 +111,10 @@ export default function LoginForm() {
                 {/* Button */}
                 <button
                     type="submit"
-                    className="w-full py-3 bg-yellow-400 text-black font-bold rounded-xl hover:opacity-90 transition"
+                    disabled={loading}
+                    className="w-full py-3 bg-yellow-400 text-black font-bold rounded-xl hover:opacity-90 transition disabled:opacity-50"
                 >
-                    Masuk
+                    {loading ? "Loading..." : "Masuk"}
                 </button>
             </form>
 
