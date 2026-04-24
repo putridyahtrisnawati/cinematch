@@ -16,12 +16,17 @@ export async function POST(req: Request) {
 
     await connectDB();
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      $or: [
+        { email: email.toLowerCase() },
+        { username: email }
+      ]
+    });
 
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Akun belum terdaftar, silakan register dulu" },
-        { status: 400 }
+        { success: false, message: "Akun tidak ditemukan" },
+        { status: 404 }
       );
     }
 
@@ -29,8 +34,8 @@ export async function POST(req: Request) {
 
     if (!isMatch) {
       return NextResponse.json(
-        { success: false, message: "Email atau password salah" },
-        { status: 400 }
+        { success: false, message: "Password salah" },
+        { status: 401 }
       );
     }
 
