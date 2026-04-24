@@ -40,3 +40,4 @@ export default function ComingCard({ title, date, desc, image }: Props) {
     </div>
   );
 }
+
