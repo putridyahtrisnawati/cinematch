@@ -3,15 +3,19 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Mail, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 import PasswordInput from "./PasswordInput";
 
 export default function RegisterForm() {
+  const router = useRouter();
   const [form, setForm] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: ""
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
@@ -20,10 +24,57 @@ export default function RegisterForm() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Register Data:", form);
-    // TODO: connect ke backend
+
+    // ✅ validasi basic di frontend
+    if (!form.username || !form.email || !form.password || !form.confirmPassword) {
+      alert("Semua field wajib diisi");
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      alert("Konfirmasi password tidak sama");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        alert(data.message || "Register gagal");
+        return;
+      }
+
+      alert("Register berhasil!");
+
+      // Reset Form
+      setForm({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+      // redirect ke login
+      router.push("/auth/login");
+
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Terjadi kesalahan server");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -92,15 +143,15 @@ export default function RegisterForm() {
 
         {/* Password */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <PasswordInput 
-            label="Password" 
+          <PasswordInput
+            label="Password"
             name="password"
             value={form.password}
             onChange={handleChange}
             required
           />
-          <PasswordInput 
-            label="Konfirmasi" 
+          <PasswordInput
+            label="Konfirmasi"
             name="confirmPassword"
             value={form.confirmPassword}
             onChange={handleChange}
@@ -110,7 +161,7 @@ export default function RegisterForm() {
 
         {/* Checkbox */}
         <div className="flex items-start gap-2">
-          <input type="checkbox" className="mt-1" />
+          <input type="checkbox" className="mt-1" required />
           <p className="text-xs text-gray-400">
             Saya menyetujui{" "}
             <span className="text-yellow-400 cursor-pointer">
@@ -120,8 +171,12 @@ export default function RegisterForm() {
         </div>
 
         {/* Button */}
-        <button className="w-full py-3 bg-yellow-400 text-black font-bold rounded-xl hover:opacity-90 transition">
-          Daftar →
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-3 bg-yellow-400 text-black font-bold rounded-xl hover:opacity-90 transition disabled:opacity-50"
+        >
+          {loading ? "Loading..." : "Daftar →"}
         </button>
       </form>
 
@@ -136,3 +191,4 @@ export default function RegisterForm() {
     </div>
   );
 }
+
