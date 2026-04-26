@@ -1,11 +1,35 @@
 'use client'
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import MovieCard from "./MovieCard";
 
-export default function NowPlaying({ movies }: any) {
+export default function NowPlaying({ search }: any) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [movies, setMovies] = useState<any[]>([]);
   const [showAll, setShowAll] = useState(false);
+
+  // 🔥 FETCH API
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const res = await fetch("/api/movies");
+        const data = await res.json();
+
+        // filter hanya now_playing
+        const filtered = data
+          .filter((movie: any) => movie.status === "now_playing")
+          .filter((movie: any) =>
+            movie.title.toLowerCase().includes(search.toLowerCase())
+          );
+
+        setMovies(filtered);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchMovies();
+  }, [search]);
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
@@ -42,7 +66,7 @@ export default function NowPlaying({ movies }: any) {
       {showAll ? (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
           {movies.map((movie: any) => (
-            <MovieCard key={movie.id} movie={movie} />
+            <MovieCard key={movie._id} movie={movie} />
           ))}
         </div>
       ) : (
@@ -67,7 +91,7 @@ export default function NowPlaying({ movies }: any) {
           >
             {movies.map((movie: any) => (
               <div
-                key={movie.id}
+                key={movie._id}
                 className="min-w-[180px] md:min-w-[220px] snap-start"
               >
                 <MovieCard movie={movie} />
