@@ -19,7 +19,9 @@ export default function NowPlaying({ search }: any) {
         const filtered = data
           .filter((movie: any) => movie.status === "now_playing")
           .filter((movie: any) =>
-            movie.title.toLowerCase().includes(search.toLowerCase())
+            (movie.title || "")
+              .toLowerCase()
+              .includes((search || "").toLowerCase())
           );
 
         setMovies(filtered);
