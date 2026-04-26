@@ -6,20 +6,9 @@ import Hero from "@/components/ui/home/Hero";
 import NowPlaying from "@/components/ui/home/NowPlaying";
 import ComingSoon from "@/components/ui/home/ComingSoon";
 import Footer from "@/components/ui/layouts/Footer";
-import { movies } from "@/data/movies";
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
-
-  const nowPlaying = movies.filter(m => m.status === "now_playing");
-  const comingSoon = movies.filter(m => m.status === "coming_soon");
-
-  const filteredNowPlaying =
-    search === ""
-      ? nowPlaying
-      : nowPlaying.filter(movie =>
-          movie.title.toLowerCase().includes(search.toLowerCase())
-        );
 
   return (
     <main className="pt-20 bg-[#041329] text-white">
@@ -31,10 +20,10 @@ export default function HomePage() {
         setSearch={setSearch}
       />
 
-      <NowPlaying movies={filteredNowPlaying} />
+      {/* 🔥 sekarang component ambil data sendiri */}
+      <NowPlaying />
 
-      {/* 🔥 INI YANG PENTING */}
-      <ComingSoon movies={comingSoon} />
+      <ComingSoon />
 
       <Footer />
 

@@ -1,10 +1,32 @@
 'use client'
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import ComingCard from "./ComingCard";
 
-export default function ComingSoon({ movies }: any) {
+export default function ComingSoon() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [movies, setMovies] = useState<any[]>([]);
+
+  // 🔥 FETCH DATA
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const res = await fetch("/api/movies");
+        const data = await res.json();
+
+        // filter coming soon
+        const filtered = data.filter(
+          (movie: any) => movie.status === "coming_soon"
+        );
+
+        setMovies(filtered);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchMovies();
+  }, []);
 
   const scroll = (dir: "left" | "right") => {
     if (!scrollRef.current) return;
@@ -49,8 +71,8 @@ export default function ComingSoon({ movies }: any) {
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide px-6"
         >
-          {movies?.map((movie: any) => (
-            <ComingCard key={movie.id} {...movie} />
+          {movies.map((movie: any) => (
+            <ComingCard key={movie._id} {...movie} />
           ))}
         </div>
 
@@ -59,4 +81,3 @@ export default function ComingSoon({ movies }: any) {
     </section>
   );
 }
-
