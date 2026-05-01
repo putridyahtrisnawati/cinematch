@@ -21,11 +21,9 @@ export default function HomePage() {
       />
 
       {/* 🔥 sekarang component ambil data sendiri */}
-      <NowPlaying />
+      <NowPlaying search={search} />
 
       <ComingSoon />
-
-      <Footer />
 
     </main>
   );

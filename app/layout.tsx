@@ -1,3 +1,5 @@
+import Navbar from "@/components/ui/layouts/Navbar";
+import Footer from "@/components/ui/layouts/Footer";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Plus_Jakarta_Sans, Manrope } from "next/font/google";
 import "./globals.css";
@@ -26,16 +28,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="id"
       className={`${geistSans.variable} ${geistMono.variable} ${jakarta.variable} ${manrope.variable}`}
     >
-      {/* ✅ TAMBAHKAN DI SINI */}
       <head>
         <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
           rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
         />
       </head>
 
-      <body className="min-h-screen bg-background text-on-surface">
+      <body className="min-h-screen bg-background text-on-surface pt-20">
+
+        <Navbar />
+      
         {children}
+
+        <Footer />
+
       </body>
     </html>
   );
