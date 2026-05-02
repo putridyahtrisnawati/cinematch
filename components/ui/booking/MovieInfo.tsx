@@ -1,10 +1,20 @@
+import Image from "next/image";
+
 export default function MovieInfo({ movie }: any) {
   if (!movie) return null;
 
   return (
     <div className="bg-[#0d1c32] p-5 rounded-2xl">
 
-      <div className="w-full h-[300px] bg-gray-700 rounded-xl mb-4" />
+      {/* ✅ GANTI INI */}
+      <div className="relative w-full h-[300px] rounded-xl overflow-hidden mb-4">
+        <Image
+          src={movie.image}
+          alt={movie.title}
+          fill
+          className="object-cover"
+        />
+      </div>
 
       <span className="bg-yellow-400 text-black text-xs px-2 py-1 rounded">
         SEDANG TAYANG
@@ -18,12 +28,13 @@ export default function MovieInfo({ movie }: any) {
 
       <div className="mt-4">
         <h3 className="text-sm font-semibold mb-2">Sinopsis Singkat</h3>
+
+        {/* ✅ GANTI INI */}
         <p className="text-gray-400 text-xs">
-          Film ini menceritakan petualangan epik yang penuh aksi dan emosi...
+          {movie.description}
         </p>
       </div>
 
     </div>
   );
 }
-
