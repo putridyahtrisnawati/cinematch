@@ -26,3 +26,4 @@ export default function MovieInfo({ movie }: any) {
     </div>
   );
 }
+
