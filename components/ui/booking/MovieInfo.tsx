@@ -6,7 +6,6 @@ export default function MovieInfo({ movie }: any) {
   return (
     <div className="bg-[#0d1c32] p-5 rounded-2xl">
 
-      {/* ✅ GANTI INI */}
       <div className="relative w-full h-[300px] rounded-xl overflow-hidden mb-4">
         <Image
           src={movie.image}
@@ -16,8 +15,9 @@ export default function MovieInfo({ movie }: any) {
         />
       </div>
 
+      {/* 🔥 FIX DI SINI */}
       <span className="bg-yellow-400 text-black text-xs px-2 py-1 rounded">
-        SEDANG TAYANG
+        {movie.status === "now_playing" ? "SEDANG TAYANG" : "AKAN TAYANG"}
       </span>
 
       <h2 className="text-xl font-bold mt-2">{movie.title}</h2>
@@ -29,7 +29,6 @@ export default function MovieInfo({ movie }: any) {
       <div className="mt-4">
         <h3 className="text-sm font-semibold mb-2">Sinopsis Singkat</h3>
 
-        {/* ✅ GANTI INI */}
         <p className="text-gray-400 text-xs">
           {movie.description}
         </p>
