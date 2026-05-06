@@ -47,9 +47,13 @@ async function seedShowtimes() {
 
         const dateString = formatDate(date);
 
+        const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+        const price = isWeekend ? 40000 : 30000;
+
         showtimes.push({
           movieId: movie._id,
           date: dateString,
+          price,
           cinemas: cinemas.map((cinema, cinemaIndex) => ({
             name: cinema,
             times:

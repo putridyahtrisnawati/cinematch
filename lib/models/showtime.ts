@@ -19,6 +19,10 @@ const ShowTimeSchema = new Schema(
       type: String,
       required: true,
     },
+    price: {
+      type: Number,
+      required: true,
+    },
     cinemas: [CinemaSchema],
   },
   { timestamps: true }
