@@ -18,16 +18,29 @@ export default function SeatPage() {
   const date = params.get("date");
   const time = params.get("time");
   const cinema = params.get("cinema");
+
+  // ✅ FORMAT TANGGAL
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return "-";
 
-    const date = new Date(dateStr);
+    const dateObj = new Date(dateStr);
 
-    return date.toLocaleDateString("id-ID", {
+    return dateObj.toLocaleDateString("id-ID", {
       day: "2-digit",
       month: "long",
       year: "numeric",
     });
+  };
+
+  // ✅ HANDLE NAVIGASI KE PAYMENT
+  const handleGoToPayment = () => {
+    if (selectedSeats.length === 0) return;
+
+    const seatParam = selectedSeats.join(",");
+
+    router.push(
+      `/payment?title=${encodeURIComponent(title || "")}&cinema=${encodeURIComponent(cinema || "")}&date=${date}&time=${time}&seats=${seatParam}`
+    );
   };
 
   return (
@@ -39,7 +52,7 @@ export default function SeatPage() {
         {/* LEFT */}
         <div className="flex items-center gap-3">
 
-          {/* 🔙 BACK BUTTON */}
+          {/* BACK BUTTON */}
           <button
             onClick={() => router.back()}
             className="w-9 h-9 flex items-center justify-center rounded-full bg-[#0d1c32] hover:bg-yellow-400 hover:text-black transition"
@@ -47,7 +60,6 @@ export default function SeatPage() {
             ←
           </button>
 
-          {/* TEXT */}
           <div>
             <p className="text-xs text-gray-400 tracking-wide">
               SEKARANG MEMILIH
@@ -59,6 +71,7 @@ export default function SeatPage() {
 
         </div>
 
+        {/* RIGHT */}
         <div className="text-right">
           <p className="text-xs text-gray-400 tracking-widest uppercase">
             TEMPAT & WAKTU
@@ -73,7 +86,7 @@ export default function SeatPage() {
       {/* CONTENT */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-        {/* LEFT (SEAT AREA) */}
+        {/* LEFT */}
         <div className="lg:col-span-2 flex flex-col items-center">
 
           <SeatGrid
@@ -85,7 +98,7 @@ export default function SeatPage() {
 
         </div>
 
-        {/* RIGHT (SUMMARY) */}
+        {/* RIGHT */}
         <BookingSummary
           selectedSeats={selectedSeats}
           movieId={movieId}
@@ -93,6 +106,7 @@ export default function SeatPage() {
           date={date}
           time={time}
           cinema={cinema}
+          onCheckout={handleGoToPayment}
         />
 
       </div>

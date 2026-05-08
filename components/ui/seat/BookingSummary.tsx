@@ -5,6 +5,7 @@ type Props = {
   date?: string | null;
   time?: string | null;
   cinema?: string | null;
+  onCheckout?: () => void;
 };
 
 export default function BookingSummary({
@@ -14,6 +15,7 @@ export default function BookingSummary({
   date,
   time,
   cinema,
+  onCheckout
 }: Props) {
 
   const pricePerSeat = 55000;
@@ -93,6 +95,7 @@ export default function BookingSummary({
 
       {/* BUTTON */}
       <button
+        onClick={onCheckout}
         disabled={selectedSeats.length === 0}
         className="w-full bg-yellow-400 text-black py-3 rounded-xl font-bold disabled:opacity-50 hover:opacity-90 transition"
       >
