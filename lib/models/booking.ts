@@ -7,34 +7,36 @@ const BookingSchema = new Schema(
       ref: "Movie",
       required: true,
     },
-
     movieTitle: {
       type: String,
       required: true,
     },
-
     cinema: {
       type: String,
       required: true,
     },
-
     date: {
       type: String,
       required: true,
     },
-
     time: {
       type: String,
       required: true,
     },
-
     seats: [
       {
         type: String,
         required: true,
       },
     ],
-
+    ticketPrice: {
+      type: Number,
+      required: true,
+    },
+    serviceFee: {
+      type: Number,
+      required: true,
+    },
     total: {
       type: Number,
       required: true,
@@ -43,5 +45,4 @@ const BookingSchema = new Schema(
   { timestamps: true }
 );
 
-export default models.Booking ||
-  mongoose.model("Booking", BookingSchema);
+export default models.Booking || mongoose.model("Booking", BookingSchema);
