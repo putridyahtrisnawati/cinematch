@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-
 import { connectDB } from "@/lib/mongodb";
-import Booking from "@/lib/models/booking";
 import ShowTime from "@/lib/models/showtime";
 
 const SERVICE_FEE = 2000;
@@ -10,15 +8,14 @@ export async function POST(req: Request) {
   try {
     await connectDB();
 
-    const body = await req.json();
+    const { movieId, date, seats } = await req.json();
 
-    const { movieId, movieTitle, cinema, date, time, seats } = body;
-
-    if (!movieId || !movieTitle || !cinema || !date || !time || !seats?.length) {
-      return NextResponse.json(
-        { message: "Data booking tidak lengkap" },
-        { status: 400 }
-      );
+    if (!movieId || !date || !seats?.length) {
+      return NextResponse.json({
+        ticketPrice: 0,
+        serviceFee: SERVICE_FEE,
+        total: 0,
+      });
     }
 
     const showtime = await ShowTime.findOne({
@@ -36,30 +33,17 @@ export async function POST(req: Request) {
     const ticketPrice = showtime.price;
     const total = (ticketPrice + SERVICE_FEE) * seats.length;
 
-    const booking = await Booking.create({
-      movieId,
-      movieTitle,
-      cinema,
-      date,
-      time,
-      seats,
+    return NextResponse.json({
       ticketPrice,
       serviceFee: SERVICE_FEE,
+      ticketCount: seats.length,
       total,
     });
-
-    return NextResponse.json(
-      {
-        message: "Booking berhasil",
-        booking,
-      },
-      { status: 201 }
-    );
   } catch (error) {
-    console.error("Booking error:", error);
+    console.error("Booking summary error:", error);
 
     return NextResponse.json(
-      { message: "Booking gagal" },
+      { message: "Gagal menghitung total" },
       { status: 500 }
     );
   }
