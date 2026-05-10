@@ -1,6 +1,18 @@
+'use client'
+
+import { useEffect, useState } from "react";
+
+type Movie = {
+  title?: string;
+  image?: string;
+  genre?: string;
+  rating?: number;
+};
+
 type Props = {
   selectedSeats: string[];
   movieId?: string | null;
+  movie?: Movie | null;
   title?: string | null;
   date?: string | null;
   time?: string | null;
@@ -8,9 +20,17 @@ type Props = {
   onCheckout?: () => void;
 };
 
+type Summary = {
+  ticketPrice: number;
+  serviceFee: number;
+  ticketCount: number;
+  total: number;
+};
+
 export default function BookingSummary({
   selectedSeats,
   movieId,
+  movie,
   title,
   date,
   time,
@@ -18,48 +38,63 @@ export default function BookingSummary({
   onCheckout
 }: Props) {
 
-  const pricePerSeat = 55000;
-  const total = selectedSeats.length * pricePerSeat;
-  const movieMeta: any = {
-    "Moana": {
-      genre: "Animation • Family",
-      duration: "107 Menit",
-    },
-    "The Super Mario Galaxy Movie": {
-      genre: "Animation • Adventure",
-      duration: "104 Menit",
-    },
-    "Siksa Kubur": {
-      genre: "Horror",
-      duration: "117 Menit",
-    },
-  };
+  const [summary, setSummary] = useState<Summary | null>(null);
 
-  const meta = movieMeta[title || ""] || {
-    genre: "Genre",
-    duration: "0 Menit",
-  };
+  // 🔥 FETCH SUMMARY DARI API
+  useEffect(() => {
+    if (!movieId || !date || selectedSeats.length === 0) return;
+
+    fetch("/api/bookings/summary", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        movieId,
+        date,
+        seats: selectedSeats
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log("SUMMARY:", data);
+        setSummary(data);
+      })
+      .catch(err => {
+        console.error(err);
+        setSummary(null);
+      });
+
+  }, [selectedSeats, movieId, date]);
 
   return (
     <div className="bg-[#0b1a2d] p-6 rounded-2xl shadow-lg w-full max-w-sm">
 
       {/* POSTER */}
-      <div className="h-44 bg-[#1c2a41] rounded-xl mb-4 flex items-center justify-center text-gray-500 text-sm">
-        POSTER N/A
-      </div>
+      {movie?.image ? (
+        <img
+          src={movie.image}
+          alt={movie.title}
+          className="h-44 w-full object-cover rounded-xl mb-4"
+        />
+      ) : (
+        <div className="h-44 bg-[#1c2a41] rounded-xl mb-4 flex items-center justify-center text-gray-500 text-sm">
+          POSTER N/A
+        </div>
+      )}
 
-      {/* MOVIE TITLE */}
+      {/* TITLE */}
       <h3 className="text-lg font-semibold mb-1">
-        {title || "Nama Film"}
+        {title || movie?.title || "Nama Film"}
       </h3>
 
       <p className="text-sm text-gray-400 mb-3">
-        {meta.genre} • {meta.duration}
+        {movie?.genre || "Genre"} • ⭐ {movie?.rating || "-"}
       </p>
 
       <div className="border-t border-gray-700 my-3" />
 
-      {/* SELECTED SEATS */}
+      {/* SEATS */}
       <div className="mb-3">
         <p className="text-sm text-gray-400 mb-2">Kursi Terpilih</p>
 
@@ -77,19 +112,18 @@ export default function BookingSummary({
             <span className="text-gray-500 text-sm">-</span>
           )}
         </div>
+
         <p className="text-sm font-medium text-gray-300 mt-2">
           Jumlah Tiket: {selectedSeats.length} tiket
         </p>
       </div>
 
-      {/* TOTAL */}
+      {/* 🔥 TOTAL DARI API */}
       <div className="bg-[#14253d] p-4 rounded-xl mb-4">
         <p className="text-xs text-gray-400">TOTAL PEMBAYARAN</p>
+
         <p className="text-xl font-bold text-yellow-400">
-          Rp {total.toLocaleString("id-ID")}
-        </p>
-        <p className="text-[10px] text-gray-500 mt-1">
-          *Termasuk biaya layanan
+          Rp {((summary?.ticketPrice || 0) * (summary?.ticketCount || 0)).toLocaleString("id-ID")}
         </p>
       </div>
 
@@ -102,7 +136,6 @@ export default function BookingSummary({
         Lanjut Pembayaran →
       </button>
 
-      {/* FOOTNOTE */}
       <p className="text-[10px] text-gray-500 text-center mt-3">
         Dengan menekan tombol di atas, Anda menyetujui
         <br />
