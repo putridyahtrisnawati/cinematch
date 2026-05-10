@@ -3,18 +3,19 @@
 type Props = {
   selectedSeats: string[];
   setSelectedSeats: (seats: string[]) => void;
+  occupiedSeats?: string[]; // 🔥 optional biar aman
 };
 
 const rows = ["A", "B", "C", "D", "E"];
-const cols = 8;
 
-// dummy kursi terisi
-const bookedSeats = ["A3", "B5", "C6", "D2"];
-
-export default function SeatGrid({ selectedSeats, setSelectedSeats }: Props) {
+export default function SeatGrid({ 
+  selectedSeats, 
+  setSelectedSeats, 
+  occupiedSeats = [] // 🔥 default biar ga undefined
+}: Props) {
 
   const toggleSeat = (seat: string) => {
-    if (bookedSeats.includes(seat)) return;
+    if (occupiedSeats.includes(seat)) return;
 
     if (selectedSeats.includes(seat)) {
       setSelectedSeats(selectedSeats.filter(s => s !== seat));
@@ -24,7 +25,7 @@ export default function SeatGrid({ selectedSeats, setSelectedSeats }: Props) {
   };
 
   const renderSeat = (seat: string) => {
-    const isBooked = bookedSeats.includes(seat);
+    const isBooked = occupiedSeats.includes(seat);
     const isSelected = selectedSeats.includes(seat);
 
     return (
@@ -47,21 +48,17 @@ export default function SeatGrid({ selectedSeats, setSelectedSeats }: Props) {
   return (
     <div className="flex flex-col items-center">
 
-      {/* SCREEN */}
       <div className="w-full max-w-xl h-[2px] bg-yellow-400 mb-3" />
-      <p className="text-xs text-gray-400 mb-6 tracking-widest">
+      <p className="text-xs text-gray-400 mb-6">
         LAYAR BIOSKOP
       </p>
 
-      {/* SEATS */}
       <div className="space-y-4">
         {rows.map((row) => (
           <div key={row} className="flex items-center gap-4">
 
-            {/* ROW LABEL */}
             <span className="w-4 text-sm">{row}</span>
 
-            {/* LEFT SIDE */}
             <div className="flex gap-2">
               {Array.from({ length: 4 }).map((_, i) => {
                 const seat = `${row}${i + 1}`;
@@ -69,10 +66,8 @@ export default function SeatGrid({ selectedSeats, setSelectedSeats }: Props) {
               })}
             </div>
 
-            {/* AISLE */}
             <div className="w-6" />
 
-            {/* RIGHT SIDE */}
             <div className="flex gap-2">
               {Array.from({ length: 4 }).map((_, i) => {
                 const seat = `${row}${i + 5}`;
