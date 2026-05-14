@@ -4,6 +4,8 @@ type Props = {
   date?: string | null;
   time?: string | null;
   seats?: string[];
+  movie?: any;
+  summary?: any;
 };
 
 export default function PaymentSummary({
@@ -12,11 +14,23 @@ export default function PaymentSummary({
   date,
   time,
   seats = [],
+  movie,
+  summary
 }: Props) {
 
-  const price = 50000;
-  const fee = 4000;
-  const total = seats.length * price + fee;
+  const price = summary?.ticketPrice || 0;
+  const fee = summary?.serviceFee || 0;
+  const total = summary?.total || 0;
+
+  const formatDate = (dateStr?: string | null) => {
+    if (!dateStr) return "-";
+
+    return new Date(dateStr).toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
 
   return (
     <div className="bg-[#0b1a2d] p-6 rounded-2xl w-full max-w-sm">
@@ -27,17 +41,18 @@ export default function PaymentSummary({
 
       {/* MOVIE */}
       <div className="flex gap-3 mb-4">
-        <div className="w-16 h-20 bg-[#1c2a41] rounded" />
+        <img
+          src={movie?.image || "/placeholder.png"}
+          alt={movie?.title}
+          className="w-16 h-20 object-cover rounded"
+        />
 
         <div>
           <p className="font-semibold">
             {title || "Nama Film"}
           </p>
           <p className="text-xs text-yellow-400">
-            Genre • Rating
-          </p>
-          <p className="text-xs text-gray-400">
-            Durasi
+            {movie?.genre} • ⭐ {movie?.rating}
           </p>
         </div>
       </div>
@@ -51,7 +66,7 @@ export default function PaymentSummary({
 
         <div className="flex justify-between">
           <span>Jadwal</span>
-          <span>{date} • {time}</span>
+          <span>{formatDate(date)} • {time}</span>
         </div>
 
         <div className="flex justify-between">
@@ -65,7 +80,7 @@ export default function PaymentSummary({
       {/* PRICE */}
       <div className="text-sm space-y-2">
         <div className="flex justify-between">
-          <span>Harga Tiket ({seats.length}x)</span>
+          <span>Harga Tiket ({summary?.ticketCount || seats.length}x)</span>
           <span>Rp {(seats.length * price).toLocaleString("id-ID")}</span>
         </div>
 

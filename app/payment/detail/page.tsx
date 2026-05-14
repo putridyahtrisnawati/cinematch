@@ -5,7 +5,14 @@ import { useEffect, useState } from "react";
 
 export default function PaymentDetail() {
   const params = useSearchParams();
+  const movieId = params.get("movieId");
+  const title = params.get("title");
+  const cinema = params.get("cinema");
+  const date = params.get("date");
+  const time = params.get("time");
+  const seats = params.get("seats")?.split(",") || [];
   const router = useRouter();
+  const [summary, setSummary] = useState<any>(null);
 
   const method = params.get("method");
 
@@ -52,19 +59,74 @@ export default function PaymentDetail() {
     return `${min}:${sec.toString().padStart(2, "0")}`;
   };
 
-  // ✅ BAYAR
-  const handlePay = () => {
-    setIsProcessing(true);
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const res = await fetch("/api/bookings/summary", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            movieId,
+            date,
+            seats,
+          }),
+        });
 
-    setTimeout(() => {
-      setIsProcessing(false);
+        const data = await res.json();
+        setSummary(data);
+
+      } catch (err) {
+        console.error("Gagal ambil summary:", err);
+      }
+    };
+
+    if (movieId && date && seats.length > 0) {
+      fetchSummary();
+    }
+  }, [movieId, date, seats.join(",")]);
+
+  // ✅ BAYAR
+  const handlePay = async () => {
+    try {
+      setIsProcessing(true);
+
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          movieId,
+          movieTitle: title,
+          cinema,
+          date,
+          time,
+          seats,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Booking gagal:", data.message);
+        setShowFailed(true);
+        return;
+      }
+
       setShowSuccess(true);
 
       setTimeout(() => {
         router.push("/tickets");
       }, 2000);
 
-    }, 1000);
+    } catch (err) {
+      console.error("Error:", err);
+      setShowFailed(true);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleCancel = () => {
@@ -126,7 +188,7 @@ export default function PaymentDetail() {
               Total Bayar
             </p>
             <p className="text-yellow-400 text-lg font-bold mb-6">
-              Rp 104.000
+              Rp {summary?.total?.toLocaleString("id-ID") || "0"}
             </p>
           </>
         ) : (
@@ -144,7 +206,7 @@ export default function PaymentDetail() {
               Total Bayar
             </p>
             <p className="text-yellow-400 text-lg font-bold mb-6">
-              Rp 104.000
+              Rp {summary?.total?.toLocaleString("id-ID") || "0"}
             </p>
           </>
         )}
