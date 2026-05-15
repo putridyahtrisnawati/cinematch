@@ -37,6 +37,19 @@ const BookingSchema = new Schema(
       type: Number,
       required: true,
     },
+    subtotal: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    promoCode: {
+      type: String,
+      default: null,
+    },
+    discountAmount: {
+      type: Number,
+      default: 0,
+    },
     total: {
       type: Number,
       required: true,
@@ -45,4 +58,6 @@ const BookingSchema = new Schema(
   { timestamps: true }
 );
 
-export default models.Booking || mongoose.model("Booking", BookingSchema);
+const Booking = models.Booking || mongoose.model("Booking", BookingSchema);
+
+export default Booking;
