@@ -1,13 +1,5 @@
 import mongoose from "mongoose";
 
-const uri = process.env.MONGODB_URI;
-
-if (!uri) {
-  throw new Error("MONGODB_URI belum diisi di .env.local");
-}
-
-const MONGODB_URI: string = uri;
-
 type MongooseCache = {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
@@ -25,6 +17,12 @@ const cached = global.mongooseCache || {
 global.mongooseCache = cached;
 
 export async function connectDB() {
+  const MONGODB_URI = process.env.MONGODB_URI;
+
+  if (!MONGODB_URI) {
+    throw new Error("MONGODB_URI belum diisi di .env.local");
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
