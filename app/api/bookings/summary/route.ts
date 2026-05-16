@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-
 import { connectDB } from "@/lib/mongodb";
-import Booking from "@/lib/models/booking";
 import ShowTime from "@/lib/models/showtime";
 import Promo from "@/lib/models/promo";
 
@@ -11,23 +9,18 @@ export async function POST(req: Request) {
   try {
     await connectDB();
 
-    const body = await req.json();
+    const { movieId, date, seats, promoCode } = await req.json();
 
-    const {
-      movieId,
-      movieTitle,
-      cinema,
-      date,
-      time,
-      seats,
-      promoCode,
-    } = body;
-
-    if (!movieId || !movieTitle || !cinema || !date || !time || !seats?.length) {
-      return NextResponse.json(
-        { message: "Data booking tidak lengkap" },
-        { status: 400 }
-      );
+    if (!movieId || !date || !seats?.length) {
+      return NextResponse.json({
+        ticketPrice: 0,
+        serviceFee: SERVICE_FEE,
+        ticketCount: 0,
+        subtotal: 0,
+        promoCode: null,
+        discountAmount: 0,
+        total: 0,
+      });
     }
 
     const showtime = await ShowTime.findOne({
@@ -43,7 +36,8 @@ export async function POST(req: Request) {
     }
 
     const ticketPrice = showtime.price;
-    const subtotal = ticketPrice * seats.length;
+    const ticketCount = seats.length;
+    const subtotal = ticketPrice * ticketCount;
 
     let discountAmount = 0;
     let finalPromoCode = null;
@@ -64,7 +58,7 @@ export async function POST(req: Request) {
 
       discountAmount = subtotal * (promo.discountPercent / 100);
 
-      if (promo.maxDiscount > 0 && discountAmount > promo.maxDiscount) {
+      if (discountAmount > promo.maxDiscount) {
         discountAmount = promo.maxDiscount;
       }
 
@@ -73,33 +67,20 @@ export async function POST(req: Request) {
 
     const total = subtotal - discountAmount + SERVICE_FEE;
 
-    const booking = await Booking.create({
-      movieId,
-      movieTitle,
-      cinema,
-      date,
-      time,
-      seats,
+    return NextResponse.json({
       ticketPrice,
       serviceFee: SERVICE_FEE,
+      ticketCount,
       subtotal,
       promoCode: finalPromoCode,
       discountAmount,
       total,
     });
-
-    return NextResponse.json(
-      {
-        message: "Booking berhasil",
-        booking,
-      },
-      { status: 201 }
-    );
   } catch (error) {
-    console.error("Booking error:", error);
+    console.error("Booking summary error:", error);
 
     return NextResponse.json(
-      { message: "Booking gagal" },
+      { message: "Gagal menghitung total" },
       { status: 500 }
     );
   }
