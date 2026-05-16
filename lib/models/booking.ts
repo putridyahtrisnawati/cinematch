@@ -54,6 +54,19 @@ const BookingSchema = new Schema(
       type: Number,
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["aktif", "dibatalkan", "expired", "selesai"],
+      default: "aktif",
+    },
+    paymentMethod: {
+      type: String,
+      default: null,
+    },
+    expiredAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
