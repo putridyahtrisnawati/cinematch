@@ -5,9 +5,25 @@ import { useRouter } from "next/navigation";
 type Props = {
     onSelect: (method: string) => void;
     selected: string | null;
+
+    // 🔥 TAMBAHAN (biar data nggak hilang)
+    title?: string | null;
+    cinema?: string | null;
+    date?: string | null;
+    time?: string | null;
+    seats?: string[];
 };
 
-export default function PaymentMethod({ onSelect, selected }: Props) {
+export default function PaymentMethod({
+    onSelect,
+    selected,
+    title,
+    cinema,
+    date,
+    time,
+    seats = []
+}: Props) {
+
     const router = useRouter();
 
     const handleSelect = (method: string) => {
@@ -105,7 +121,16 @@ export default function PaymentMethod({ onSelect, selected }: Props) {
 
             {/* PROMO */}
             <div
-                onClick={() => router.push(`/payment/promo?method=${selected || ""}`)}
+                onClick={() =>
+                    router.push(
+                        `/payment/promo?title=${title}` +
+                        `&cinema=${cinema}` +
+                        `&date=${date}` +
+                        `&time=${time}` +
+                        `&seats=${seats.join(",")}` +
+                        `&method=${selected || ""}`
+                    )
+                }
                 className="bg-[#0d1c32] p-4 rounded-xl flex justify-between cursor-pointer"
             >
                 <div>

@@ -21,6 +21,7 @@ export default function PaymentSummary({
   const price = summary?.ticketPrice || 0;
   const fee = summary?.serviceFee || 0;
   const total = summary?.total || 0;
+  const discount = summary?.discount || 0;
 
   const formatDate = (dateStr?: string | null) => {
     if (!dateStr) return "-";
@@ -88,6 +89,14 @@ export default function PaymentSummary({
           <span>Biaya Layanan</span>
           <span>Rp {fee.toLocaleString("id-ID")}</span>
         </div>
+
+        {/* 🔥 DISKON */}
+        {discount > 0 && (
+          <div className="flex justify-between text-green-400">
+            <span>Diskon</span>
+            <span>-Rp {discount.toLocaleString("id-ID")}</span>
+          </div>
+        )}
       </div>
 
       {/* TOTAL */}
@@ -97,6 +106,13 @@ export default function PaymentSummary({
           Rp {total.toLocaleString("id-ID")}
         </span>
       </div>
+
+      {/* BONUS */}
+      {discount > 0 && (
+        <p className="text-green-400 text-xs mt-2">
+          Kamu hemat Rp {discount.toLocaleString("id-ID")} 🎉
+        </p>
+      )}
 
     </div>
   );

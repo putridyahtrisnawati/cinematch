@@ -17,20 +17,23 @@ export default function PaymentPage() {
   const date = params.get("date");
   const time = params.get("time");
   const seats = params.get("seats")?.split(",") || [];
+  const promoCode = params.get("promoCode"); // 🔥
 
   // 🔹 state
   const [method, setMethod] = useState<string | null>(methodFromURL);
   const [movie, setMovie] = useState<any>(null);
   const [summary, setSummary] = useState<any>(null);
 
-  // 🔹 sync method dari URL
+  // 🔥 promo state
+  const [discount, setDiscount] = useState(0);
+  const [finalTotal, setFinalTotal] = useState(0);
+
+  // 🔹 sync method
   useEffect(() => {
-    if (methodFromURL) {
-      setMethod(methodFromURL);
-    }
+    if (methodFromURL) setMethod(methodFromURL);
   }, [methodFromURL]);
 
-  // 🔹 fetch movie dari API
+  // 🔹 fetch movie
   useEffect(() => {
     const fetchMovie = async () => {
       try {
@@ -38,8 +41,7 @@ export default function PaymentPage() {
         const data = await res.json();
 
         const selectedMovie = data.find(
-          (m: any) =>
-            m.title.toLowerCase() === title?.toLowerCase()
+          (m: any) => m.title.toLowerCase() === title?.toLowerCase()
         );
 
         setMovie(selectedMovie);
@@ -48,11 +50,10 @@ export default function PaymentPage() {
       }
     };
 
-    if (title) {
-      fetchMovie();
-    }
+    if (title) fetchMovie();
   }, [title]);
 
+  // 🔹 fetch summary
   useEffect(() => {
     const fetchSummary = async () => {
       try {
@@ -63,13 +64,13 @@ export default function PaymentPage() {
           },
           body: JSON.stringify({
             movieId: movie?._id?.toString(),
-            date: date,
-            seats: seats,
+            date,
+            seats,
           }),
         });
 
         const data = await res.json();
-        console.log("SUMMARY:", data); // 🔍 debug
+        console.log("SUMMARY:", data);
 
         setSummary(data);
       } catch (err) {
@@ -81,6 +82,39 @@ export default function PaymentPage() {
       fetchSummary();
     }
   }, [movie?._id, date, seats.join(",")]);
+
+  // 🔥 APPLY PROMO
+  useEffect(() => {
+    const applyPromo = async () => {
+      if (!promoCode || !summary?.subtotal) return;
+
+      try {
+        const res = await fetch("/api/promos/validate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            promoCode,
+            subtotal: summary.subtotal,
+          }),
+        });
+
+        const data = await res.json();
+        console.log("PROMO:", data);
+
+        setDiscount(data.discountAmount);
+
+        // subtotal - diskon + fee
+        setFinalTotal(data.totalAfterDiscount + summary.serviceFee);
+
+      } catch (err) {
+        console.error("Promo error:", err);
+      }
+    };
+
+    applyPromo();
+  }, [promoCode, summary]);
 
   return (
     <main className="min-h-screen bg-[#041329] text-white p-8">
@@ -94,16 +128,22 @@ export default function PaymentPage() {
           ←
         </button>
 
-        <h2 className="text-xl font-semibold">
-          Pembayaran
-        </h2>
+        <h2 className="text-xl font-semibold">Pembayaran</h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
         {/* LEFT */}
         <div className="lg:col-span-2">
-          <PaymentMethod selected={method} onSelect={setMethod} />
+          <PaymentMethod
+            selected={method}
+            onSelect={setMethod}
+            title={title}
+            cinema={cinema}
+            date={date}
+            time={time}
+            seats={seats}
+          />
         </div>
 
         {/* RIGHT */}
@@ -115,7 +155,11 @@ export default function PaymentPage() {
             time={time}
             seats={seats}
             movie={movie}
-            summary={summary}
+            summary={{
+              ...summary,
+              discount: discount,
+              total: finalTotal || summary?.total,
+            }}
           />
 
           <button
@@ -128,7 +172,8 @@ export default function PaymentPage() {
                 `&cinema=${cinema}` +
                 `&date=${date}` +
                 `&time=${time}` +
-                `&seats=${seats.join(",")}`
+                `&seats=${seats.join(",")}` +
+                `&promoCode=${promoCode || ""}`
               )
             }
             className="w-full bg-yellow-400 text-black py-3 rounded-xl font-bold disabled:opacity-50"

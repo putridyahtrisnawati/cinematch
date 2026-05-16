@@ -14,6 +14,10 @@ export default function PaymentDetail() {
   const router = useRouter();
   const [summary, setSummary] = useState<any>(null);
 
+  const promoCode = params.get("promoCode");
+  const [discount, setDiscount] = useState(0);
+  const [finalTotal, setFinalTotal] = useState(0);
+
   const method = params.get("method");
 
   const isEwallet = method === "gopay" || method === "ovo";
@@ -86,6 +90,39 @@ export default function PaymentDetail() {
       fetchSummary();
     }
   }, [movieId, date, seats.join(",")]);
+
+  useEffect(() => {
+    const applyPromo = async () => {
+      if (!promoCode || !summary?.subtotal) return;
+
+      try {
+        const res = await fetch("/api/promos/validate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            promoCode,
+            subtotal: summary.subtotal,
+          }),
+        });
+
+        const data = await res.json();
+
+        console.log("PROMO DETAIL:", data);
+
+        setDiscount(data.discountAmount);
+
+        // subtotal - diskon + serviceFee
+        setFinalTotal(data.totalAfterDiscount + summary.serviceFee);
+
+      } catch (err) {
+        console.error("Promo error:", err);
+      }
+    };
+
+    applyPromo();
+  }, [promoCode, summary]);
 
   // ✅ BAYAR
   const handlePay = async () => {
@@ -188,7 +225,7 @@ export default function PaymentDetail() {
               Total Bayar
             </p>
             <p className="text-yellow-400 text-lg font-bold mb-6">
-              Rp {summary?.total?.toLocaleString("id-ID") || "0"}
+              Rp {(finalTotal || summary?.total || 0).toLocaleString("id-ID")}
             </p>
           </>
         ) : (
@@ -206,7 +243,7 @@ export default function PaymentDetail() {
               Total Bayar
             </p>
             <p className="text-yellow-400 text-lg font-bold mb-6">
-              Rp {summary?.total?.toLocaleString("id-ID") || "0"}
+              Rp {(finalTotal || summary?.total || 0).toLocaleString("id-ID")}
             </p>
           </>
         )}
