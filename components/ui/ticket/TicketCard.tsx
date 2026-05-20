@@ -6,28 +6,35 @@ type Props = {
   item: any;
   movie: any;
   onShowQR: (ticket: any) => void;
+  onRefresh: () => void;
 };
 
-export default function TicketCard({ item, movie, onShowQR }: Props) {
+export default function TicketCard({
+  item,
+  movie,
+  onShowQR,
+}: Props) {
 
   return (
     <div className="flex justify-between items-center bg-[#0d1c32] p-4 rounded-xl">
 
       {/* LEFT */}
       <div className="flex gap-4">
+
         <img
           src={movie?.image || "/placeholder.png"}
-          alt={movie?.title}
+          alt={movie?.title || item.movieTitle}
           className="w-16 h-20 rounded object-cover"
         />
 
         <div className="space-y-1">
+
           <p className="font-semibold text-sm">
             {movie?.title || item.movieTitle}
           </p>
 
           <p className="text-xs text-gray-400">
-            {item.cinema}
+            {item.cinema || "-"}
           </p>
 
           <p className="text-xs text-gray-400">
@@ -40,6 +47,7 @@ export default function TicketCard({ item, movie, onShowQR }: Props) {
           <p className="text-xs text-gray-400">
             Kursi: {item.seats?.join(", ") || "-"}
           </p>
+
         </div>
       </div>
 
@@ -50,7 +58,7 @@ export default function TicketCard({ item, movie, onShowQR }: Props) {
         <TicketStatus status={item.status} />
 
         {/* ACTION */}
-        {item.status === "ACTIVE" ? (
+        {item.status === "aktif" ? (
           <button
             onClick={() => onShowQR(item)}
             className="text-yellow-400 text-sm hover:underline"

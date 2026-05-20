@@ -8,59 +8,38 @@ export default function TicketPage() {
   const [tickets, setTickets] = useState<any[]>([]);
   const [movies, setMovies] = useState<any[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // 🔥 DUMMY DATA
-  useEffect(() => {
-    const dummy = [
-      {
-        _id: "1",
-        movieTitle: "Moana",
-        cinema: "XXI Kediri",
-        date: "2026-05-20",
-        time: "19:30",
-        seats: ["J12", "J13"],
-        status: "ACTIVE"
-      },
-      {
-        _id: "2",
-        movieTitle: "Hoppers",
-        cinema: "CGV Kediri Mall",
-        date: "2026-05-18",
-        time: "21:00",
-        seats: ["A4"],
-        status: "COMPLETED"
-      },
-      {
-        _id: "3",
-        movieTitle: "The Super Mario Galaxy Movie",
-        cinema: "CGV Kediri Mall",
-        date: "2026-05-05",
-        time: "14:20",
-        seats: ["F7", "F8"],
-        status: "CANCELLED_USER"
-      },
-      {
-        _id: "4",
-        movieTitle: "Project Hall Mary",
-        cinema: "Golden Theatre",
-        date: "2026-04-27",
-        time: "16:45",
-        seats: ["D10"],
-        status: "CANCELLED_SYSTEM"
-      }
-    ];
+  // 🔥 FETCH TICKETS FROM BACKEND
+  const fetchTickets = async () => {
+    try {
+      setLoading(true);
 
-    setTickets(dummy);
-  }, []);
+      const res = await fetch("/api/tickets");
+      const data = await res.json();
 
-  // 🔥 FETCH MOVIE (POSTER)
-  useEffect(() => {
-    const fetchMovies = async () => {
+      setTickets(data.tickets || []);
+    } catch (err) {
+      console.error("Fetch tickets error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔥 FETCH MOVIES (POSTER)
+  const fetchMovies = async () => {
+    try {
       const res = await fetch("/api/movies");
       const data = await res.json();
-      setMovies(data);
-    };
 
+      setMovies(data || []);
+    } catch (err) {
+      console.error("Fetch movies error:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchTickets();
     fetchMovies();
   }, []);
 
@@ -72,13 +51,24 @@ export default function TicketPage() {
       </h1>
 
       <div className="bg-[#0b1a2d] p-4 rounded-xl">
-        <TicketList
-          tickets={tickets}
-          movies={movies}
-          onShowQR={setSelectedTicket}
-        />
+
+        {/* 🔄 LOADING */}
+        {loading ? (
+          <p className="text-center text-gray-400">
+            Loading tiket...
+          </p>
+        ) : (
+          <TicketList
+            tickets={tickets}
+            movies={movies}
+            onShowQR={setSelectedTicket}
+            onRefresh={fetchTickets} // 🔥 biar bisa refresh setelah cancel
+          />
+        )}
+
       </div>
 
+      {/* 🔥 MODAL QR */}
       {selectedTicket && (
         <TicketModal
           ticket={selectedTicket}

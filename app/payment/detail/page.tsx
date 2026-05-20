@@ -41,9 +41,32 @@ export default function PaymentDetail() {
   // ⛔ AUTO FAILED SAAT TIMER HABIS (KHUSUS VA)
   useEffect(() => {
     if (timeLeft === 0 && !isEwallet && !showSuccess && !showFailed) {
+      const createExpired = async () => {
+        try {
+          await fetch("/api/bookings", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              movieId,
+              movieTitle: title,
+              cinema,
+              date,
+              time,
+              seats,
+              status: "expired",
+            }),
+          });
+        } catch (err) {
+          console.error("Expired error:", err);
+        }
+      };
+
+      createExpired(); 
+
       setShowFailed(true);
       setFailedType("system");
-      setShowFailed(true);
 
       setTimeout(() => {
         router.push("/tickets");
@@ -141,6 +164,7 @@ export default function PaymentDetail() {
           date,
           time,
           seats,
+          promoCode,
         }),
       });
 
@@ -166,13 +190,34 @@ export default function PaymentDetail() {
     }
   };
 
-  const handleCancel = () => {
-    setFailedType("user");
-    setShowFailed(true);
+  const handleCancel = async () => {
+    try {
+      await fetch("/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          movieId,
+          movieTitle: title,
+          cinema,
+          date,
+          time,
+          seats,
+          status: "dibatalkan",
+        }),
+      });
 
-    setTimeout(() => {
-      router.push("/tickets");
-    }, 2000);
+      setFailedType("user");
+      setShowFailed(true);
+
+      setTimeout(() => {
+        router.push("/tickets");
+      }, 2000);
+
+    } catch (err) {
+      console.error("Cancel error:", err);
+    }
   };
   return (
     <main className="min-h-screen bg-[#041329] text-white p-8">
