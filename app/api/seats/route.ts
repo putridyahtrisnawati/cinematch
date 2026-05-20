@@ -26,6 +26,7 @@ export async function GET(req: Request) {
       cinema,
       date,
       time,
+      status: "aktif",
     });
 
     const occupiedSeats = bookings.flatMap((booking) => booking.seats);

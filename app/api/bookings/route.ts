@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
-    const { movieId, movieTitle, cinema, date, time, seats, promoCode, method } = body;
+    const { movieId, movieTitle, cinema, date, time, seats, promoCode, method, status } = body;
 
     if (!movieId || !movieTitle || !cinema || !date || !time || !seats?.length) {
       return NextResponse.json(
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
       discountAmount,
       total,
       paymentMethod: method || null,
-      status: "aktif",
+      status: status || "aktif",
       expiredAt,
     });
 
