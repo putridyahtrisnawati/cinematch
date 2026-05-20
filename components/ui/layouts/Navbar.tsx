@@ -36,9 +36,9 @@ export default function Navbar() {
 
             {/* PROMO */}
             <Link
-              href="/promo"
+              href="/promos"
               className={
-                pathname === "/promo"
+                pathname === "/promos"
                   ? "text-yellow-400 font-semibold border-b-2 border-yellow-400 pb-1"
                   : "text-gray-300 hover:text-yellow-400 transition"
               }
