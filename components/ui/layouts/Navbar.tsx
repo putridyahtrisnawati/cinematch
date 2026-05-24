@@ -64,11 +64,18 @@ export default function Navbar() {
         {/* RIGHT */}
         <div className="flex items-center gap-4">
 
-          <button className="p-2 rounded-full hover:bg-white/10 transition">
+          <Link
+            href="/profile"
+            className={
+              pathname === "/profile"
+                ? "p-2 rounded-full bg-white/10 transition"
+                : "p-2 rounded-full hover:bg-white/10 transition"
+            }
+          >
             <span className="material-symbols-outlined text-yellow-400">
               account_circle
             </span>
-          </button>
+          </Link>
 
         </div>
 
@@ -77,4 +84,3 @@ export default function Navbar() {
     </header>
   );
 }
-
