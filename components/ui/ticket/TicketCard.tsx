@@ -1,5 +1,6 @@
-'use client';
+"use client";
 
+import { useRouter } from "next/navigation";
 import TicketStatus from "./TicketStatus";
 
 type Props = {
@@ -14,68 +15,73 @@ export default function TicketCard({
   movie,
   onShowQR,
 }: Props) {
+  const router = useRouter();
+
+  const formatDate = (date: string) => {
+    if (!date) return "-";
+
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return date;
+    }
+
+    return parsedDate.toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
 
   return (
-    <div className="flex justify-between items-center bg-[#0d1c32] p-4 rounded-xl">
-
-      {/* LEFT */}
-      <div className="flex gap-4">
-
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-[#0d1c32] p-4 rounded-xl border border-white/5 hover:border-yellow-400/30 transition-all duration-200 shadow-lg shadow-black/10">
+      <div className="flex gap-4 min-w-0">
         <img
           src={movie?.image || "/placeholder.png"}
-          alt={movie?.title || item.movieTitle}
-          className="w-16 h-20 rounded object-cover"
+          alt={movie?.title || item.movieTitle || "Poster film"}
+          className="w-16 h-20 rounded-lg object-cover bg-[#14243a] shrink-0"
         />
 
-        <div className="space-y-1">
-
-          <p className="font-semibold text-sm">
-            {movie?.title || item.movieTitle}
+        <div className="space-y-1 min-w-0">
+          <p className="font-semibold text-sm line-clamp-1">
+            {movie?.title || item.movieTitle || "Nama Film"}
           </p>
 
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-400 line-clamp-1">
             {item.cinema || "-"}
           </p>
 
           <p className="text-xs text-gray-400">
-            {item.date
-              ? new Date(item.date).toLocaleDateString("id-ID")
-              : "-"}{" "}
-            • {item.time || "-"}
+            {formatDate(item.date)} • {item.time || "-"}
           </p>
 
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-400 line-clamp-1">
             Kursi: {item.seats?.join(", ") || "-"}
           </p>
-
         </div>
       </div>
 
-      {/* RIGHT */}
-      <div className="flex flex-col items-end gap-2">
-
-        {/* STATUS */}
+      <div className="flex sm:flex-col items-center sm:items-end justify-between gap-3">
         <TicketStatus status={item.status} />
 
-        {/* ACTION */}
         {item.status === "aktif" ? (
           <button
+            type="button"
             onClick={() => onShowQR(item)}
-            className="text-yellow-400 text-sm hover:underline"
+            className="text-yellow-400 text-sm font-semibold hover:text-yellow-300 active:scale-95 transition-all duration-200"
           >
             Lihat E-Tiket
           </button>
         ) : (
           <button
-            onClick={() => window.location.href = "/"}
-            className="text-yellow-400 text-sm hover:underline"
+            type="button"
+            onClick={() => router.push("/")}
+            className="text-yellow-400 text-sm font-semibold hover:text-yellow-300 active:scale-95 transition-all duration-200"
           >
             Beli Lagi
           </button>
         )}
-
       </div>
-
     </div>
   );
 }
