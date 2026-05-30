@@ -1,27 +1,27 @@
-'use client'
+"use client";
 
 type Props = {
   selectedSeats: string[];
   setSelectedSeats: (seats: string[]) => void;
-  occupiedSeats?: string[]; // 🔥 optional biar aman
+  occupiedSeats?: string[];
 };
 
 const rows = ["A", "B", "C", "D", "E"];
 
-export default function SeatGrid({ 
-  selectedSeats, 
-  setSelectedSeats, 
-  occupiedSeats = [] // 🔥 default biar ga undefined
+export default function SeatGrid({
+  selectedSeats,
+  setSelectedSeats,
+  occupiedSeats = [],
 }: Props) {
-
   const toggleSeat = (seat: string) => {
     if (occupiedSeats.includes(seat)) return;
 
     if (selectedSeats.includes(seat)) {
-      setSelectedSeats(selectedSeats.filter(s => s !== seat));
-    } else {
-      setSelectedSeats([...selectedSeats, seat]);
+      setSelectedSeats(selectedSeats.filter((s) => s !== seat));
+      return;
     }
+
+    setSelectedSeats([...selectedSeats, seat]);
   };
 
   const renderSeat = (seat: string) => {
@@ -31,24 +31,33 @@ export default function SeatGrid({
     return (
       <button
         key={seat}
+        type="button"
         onClick={() => toggleSeat(seat)}
-        className={`w-9 h-9 rounded flex items-center justify-center text-xs transition ${
+        disabled={isBooked}
+        aria-label={
           isBooked
-            ? "text-gray-500 cursor-not-allowed"
+            ? `Kursi ${seat} sudah terisi`
             : isSelected
-            ? "bg-yellow-400 text-black"
+            ? `Batalkan kursi ${seat}`
+            : `Pilih kursi ${seat}`
+        }
+        className={`w-9 h-9 rounded flex items-center justify-center text-xs transition-all duration-200 active:scale-90 ${
+          isBooked
+            ? "text-gray-500 cursor-not-allowed opacity-60"
+            : isSelected
+            ? "bg-yellow-400 text-black font-bold shadow-md shadow-yellow-400/20"
             : "bg-[#1c2a41] hover:bg-yellow-400 hover:text-black"
         }`}
       >
-        {isBooked ? "✕" : ""}
+        {isBooked ? "✕" : isSelected ? seat : ""}
       </button>
     );
   };
 
   return (
     <div className="flex flex-col items-center">
+      <div className="w-full max-w-xl h-[2px] bg-yellow-400 mb-3 shadow-md shadow-yellow-400/20" />
 
-      <div className="w-full max-w-xl h-[2px] bg-yellow-400 mb-3" />
       <p className="text-xs text-gray-400 mb-6">
         LAYAR BIOSKOP
       </p>
@@ -56,8 +65,9 @@ export default function SeatGrid({
       <div className="space-y-4">
         {rows.map((row) => (
           <div key={row} className="flex items-center gap-4">
-
-            <span className="w-4 text-sm">{row}</span>
+            <span className="w-4 text-sm text-gray-300">
+              {row}
+            </span>
 
             <div className="flex gap-2">
               {Array.from({ length: 4 }).map((_, i) => {
@@ -74,11 +84,9 @@ export default function SeatGrid({
                 return renderSeat(seat);
               })}
             </div>
-
           </div>
         ))}
       </div>
-
     </div>
   );
 }

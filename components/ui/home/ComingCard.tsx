@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Image from "next/image";
 
@@ -10,29 +10,40 @@ type Props = {
 };
 
 export default function ComingCard({ title, date, desc, image }: Props) {
-  return (
-    <div className="flex gap-4 min-w-[380px] bg-[#0d1c32] rounded-xl p-4 hover:bg-[#13233f] transition">
+  const poster = image || "/placeholder-movie.jpg";
 
-      {/* Thumbnail */}
-      <div className="w-24 h-32 relative rounded-lg overflow-hidden">
+  return (
+    <div className="flex gap-4 min-w-[380px] shrink-0 bg-[#0d1c32] rounded-xl p-4 hover:bg-[#13233f] transition">
+
+      <div className="w-24 h-32 relative rounded-lg overflow-hidden bg-[#14243a] shrink-0">
         <Image
-          src={image}
-          alt={title}
+          src={poster}
+          alt={title || "Coming soon movie"}
           fill
           sizes="96px"
           className="object-cover"
         />
       </div>
 
-      {/* Info */}
-      <div className="flex flex-col justify-between">
+      <div className="flex flex-col justify-between min-w-0">
         <div>
-          <p className="text-xs text-yellow-400">{date}</p>
-          <h3 className="font-semibold">{title}</h3>
-          <p className="text-xs text-gray-400">{desc}</p>
+          <p className="text-xs text-yellow-400 line-clamp-1">
+            {date}
+          </p>
+
+          <h3 className="font-semibold line-clamp-1">
+            {title}
+          </h3>
+
+          <p className="text-xs text-gray-400 line-clamp-3">
+            {desc}
+          </p>
         </div>
 
-        <button className="text-xs text-gray-400 hover:text-yellow-400 flex items-center gap-1 mt-2">
+        <button
+          type="button"
+          className="text-xs text-gray-400 hover:text-yellow-400 flex items-center gap-1 mt-2 transition w-fit"
+        >
           🔔 Ingatkan Saya
         </button>
       </div>
@@ -40,4 +51,3 @@ export default function ComingCard({ title, date, desc, image }: Props) {
     </div>
   );
 }
-

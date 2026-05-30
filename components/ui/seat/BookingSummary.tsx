@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useEffect, useState } from "react";
 
@@ -24,6 +24,7 @@ type Summary = {
   ticketPrice: number;
   serviceFee: number;
   ticketCount: number;
+  subtotal?: number;
   total: number;
 };
 
@@ -35,47 +36,63 @@ export default function BookingSummary({
   date,
   time,
   cinema,
-  onCheckout
+  onCheckout,
 }: Props) {
-
   const [summary, setSummary] = useState<Summary | null>(null);
+  const [loadingSummary, setLoadingSummary] = useState(false);
 
-  // 🔥 FETCH SUMMARY DARI API
   useEffect(() => {
-    if (!movieId || !date || selectedSeats.length === 0) return;
+    if (!movieId || !date || selectedSeats.length === 0) {
+      setSummary(null);
+      return;
+    }
 
-    fetch("/api/bookings/summary", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        movieId,
-        date,
-        seats: selectedSeats
-      })
-    })
-      .then(res => res.json())
-      .then(data => {
-        console.log("SUMMARY:", data);
+    const fetchSummary = async () => {
+      try {
+        setLoadingSummary(true);
+
+        const res = await fetch("/api/bookings/summary", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            movieId,
+            date,
+            seats: selectedSeats,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Gagal mengambil summary");
+        }
+
         setSummary(data);
-      })
-      .catch(err => {
-        console.error(err);
+      } catch (err) {
+        console.error("Fetch summary error:", err);
         setSummary(null);
-      });
+      } finally {
+        setLoadingSummary(false);
+      }
+    };
 
+    fetchSummary();
   }, [selectedSeats, movieId, date]);
 
-  return (
-    <div className="bg-[#0b1a2d] p-6 rounded-2xl shadow-lg w-full max-w-sm">
+  const ticketCount = summary?.ticketCount || selectedSeats.length;
+  const ticketPrice = summary?.ticketPrice || 0;
+  const subtotal = summary?.subtotal ?? ticketPrice * ticketCount;
+  const totalPayment = summary?.total ?? subtotal;
 
-      {/* POSTER */}
+  return (
+    <div className="bg-[#0b1a2d] p-6 rounded-2xl shadow-lg w-full max-w-sm border border-white/5">
       {movie?.image ? (
         <img
           src={movie.image}
-          alt={movie.title}
-          className="h-44 w-full object-cover rounded-xl mb-4"
+          alt={movie.title || "Poster film"}
+          className="h-44 w-full object-cover rounded-xl mb-4 bg-[#1c2a41]"
         />
       ) : (
         <div className="h-44 bg-[#1c2a41] rounded-xl mb-4 flex items-center justify-center text-gray-500 text-sm">
@@ -83,27 +100,25 @@ export default function BookingSummary({
         </div>
       )}
 
-      {/* TITLE */}
-      <h3 className="text-lg font-semibold mb-1">
+      <h3 className="text-lg font-semibold mb-1 line-clamp-1">
         {title || movie?.title || "Nama Film"}
       </h3>
 
-      <p className="text-sm text-gray-400 mb-3">
+      <p className="text-sm text-gray-400 mb-3 line-clamp-1">
         {movie?.genre || "Genre"} • ⭐ {movie?.rating || "-"}
       </p>
 
       <div className="border-t border-gray-700 my-3" />
 
-      {/* SEATS */}
       <div className="mb-3">
         <p className="text-sm text-gray-400 mb-2">Kursi Terpilih</p>
 
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap min-h-[32px]">
           {selectedSeats.length > 0 ? (
             selectedSeats.map((seat) => (
               <span
                 key={seat}
-                className="bg-[#1c2a41] px-3 py-1 rounded-full text-sm"
+                className="bg-[#1c2a41] px-3 py-1 rounded-full text-sm border border-white/5"
               >
                 {seat}
               </span>
@@ -118,22 +133,31 @@ export default function BookingSummary({
         </p>
       </div>
 
-      {/* 🔥 TOTAL DARI API */}
       <div className="bg-[#14253d] p-4 rounded-xl mb-4">
         <p className="text-xs text-gray-400">TOTAL PEMBAYARAN</p>
 
-        <p className="text-xl font-bold text-yellow-400">
-          Rp {((summary?.ticketPrice || 0) * (summary?.ticketCount || 0)).toLocaleString("id-ID")}
-        </p>
+        {loadingSummary ? (
+          <div className="h-7 w-40 bg-white/10 rounded-md animate-pulse mt-2" />
+        ) : (
+          <p className="text-xl font-bold text-yellow-400">
+            Rp {totalPayment.toLocaleString("id-ID")}
+          </p>
+        )}
+
+        {selectedSeats.length > 0 && !loadingSummary && (
+          <p className="text-[11px] text-gray-500 mt-1">
+            {selectedSeats.length} tiket dipilih
+          </p>
+        )}
       </div>
 
-      {/* BUTTON */}
       <button
+        type="button"
         onClick={onCheckout}
-        disabled={selectedSeats.length === 0}
-        className="w-full bg-yellow-400 text-black py-3 rounded-xl font-bold disabled:opacity-50 hover:opacity-90 transition"
+        disabled={selectedSeats.length === 0 || loadingSummary}
+        className="w-full bg-yellow-400 text-black py-3 rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-yellow-300 active:scale-95 transition-all duration-200"
       >
-        Lanjut Pembayaran →
+        {loadingSummary ? "Menghitung..." : "Lanjut Pembayaran →"}
       </button>
 
       <p className="text-[10px] text-gray-500 text-center mt-3">
@@ -141,7 +165,6 @@ export default function BookingSummary({
         <br />
         Syarat & Ketentuan CineMatch.
       </p>
-
     </div>
   );
 }

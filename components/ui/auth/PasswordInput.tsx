@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { Eye, EyeOff, Lock } from "lucide-react";
 import { useState } from "react";
@@ -13,26 +13,26 @@ type Props = {
   autoComplete?: string;
 };
 
-export default function PasswordInput({ 
-  label, 
-  value, 
-  onChange, 
-  name, 
-  placeholder = "••••••••", 
-  required = false, 
-  autoComplete 
+export default function PasswordInput({
+  label,
+  value,
+  onChange,
+  name,
+  placeholder = "••••••••",
+  required = false,
+  autoComplete,
 }: Props) {
   const [show, setShow] = useState(false);
 
   return (
     <div>
-      <label className="text-sm text-gray-400 ml-1">{label}</label>
+      <label className="text-sm text-gray-400 ml-1">
+        {label}
+      </label>
 
-      <div className="relative mt-1">
-
-        {/* 🔒 ICON LOCK */}
+      <div className="relative mt-1 group">
         <Lock
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-yellow-400 transition"
           size={18}
         />
 
@@ -44,18 +44,17 @@ export default function PasswordInput({
           placeholder={placeholder}
           required={required}
           autoComplete={autoComplete}
-          className="w-full pl-10 pr-12 py-3 rounded-xl bg-[#0d1c32] text-sm outline-none focus:ring-2 focus:ring-yellow-400"
+          className="w-full pl-10 pr-12 py-3 rounded-xl bg-[#0d1c32] text-sm outline-none border border-white/5 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition"
         />
 
-        {/* 👁️ ICON TOGGLE */}
         <button
           type="button"
-          onClick={() => setShow(prev => !prev)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-30 p-2 cursor-pointer text-gray-400 hover:text-yellow-400"
+          onClick={() => setShow((prev) => !prev)}
+          aria-label={show ? "Sembunyikan password" : "Tampilkan password"}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-30 p-2 rounded-lg cursor-pointer text-gray-400 hover:text-yellow-400 hover:bg-white/5 transition"
         >
           {show ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
-
       </div>
     </div>
   );
