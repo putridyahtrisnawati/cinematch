@@ -34,6 +34,17 @@ export async function POST(req: Request) {
       );
     }
 
+    // Validasi jadwal sudah lewat atau belum
+    const showDateTime = new Date(`${date}T${time}:00`);
+    const now = new Date();
+
+    if (showDateTime <= now) {
+      return NextResponse.json(
+        { message: "Jadwal film sudah lewat dan tidak bisa dipesan" },
+        { status: 400 }
+      );
+    }
+
     const ticketPrice = showtime.price;
     const subtotal = ticketPrice * seats.length;
 
