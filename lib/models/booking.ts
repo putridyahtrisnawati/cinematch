@@ -67,6 +67,10 @@ const BookingSchema = new Schema(
       type: Date,
       default: null,
     },
+    scannedAt: {
+    type: Date,
+    default: null,
+    },
   },
   { timestamps: true }
 );
