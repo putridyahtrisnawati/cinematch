@@ -97,6 +97,15 @@ export default function BookingPage() {
     (item) => item.date === selectedDate
   );
 
+  const isPastSelectedShowtime = () => {
+    if (!selectedDate || !selectedTime) return false;
+
+    const showDateTime = new Date(`${selectedDate}T${selectedTime}:00`);
+    const now = new Date();
+
+    return showDateTime <= now;
+  };
+
   const handleSelectSchedule = (cinema: any, time: string) => {
     setSelectedCinema(cinema);
     setSelectedTime(time);
@@ -104,6 +113,13 @@ export default function BookingPage() {
 
   const handleCariKursi = () => {
     if (!selectedCinema || !selectedTime || !selectedDate) return;
+
+    if (isPastSelectedShowtime()) {
+      setSelectedCinema(null);
+      setSelectedTime(null);
+      alert("Jadwal film sudah lewat dan tidak bisa dipesan.");
+      return;
+    }
 
     const user = localStorage.getItem("user");
 
@@ -247,12 +263,11 @@ export default function BookingPage() {
           <button
             type="button"
             onClick={handleCariKursi}
-            disabled={!selectedCinema || !selectedTime}
-            className={`w-full sm:w-auto px-10 py-3 rounded-xl font-bold transition-all duration-200 ${
-              selectedCinema && selectedTime
+            disabled={!selectedCinema || !selectedTime || isPastSelectedShowtime()}
+            className={`w-full sm:w-auto px-10 py-3 rounded-xl font-bold transition-all duration-200 ${selectedCinema && selectedTime && !isPastSelectedShowtime()
                 ? "bg-yellow-400 text-black hover:bg-yellow-300 active:scale-95 shadow-lg shadow-yellow-400/10"
                 : "bg-gray-500 text-gray-300 cursor-not-allowed opacity-60"
-            }`}
+              }`}
           >
             Cari Kursi
           </button>
