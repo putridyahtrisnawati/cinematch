@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
-export default function PromoPage() {
+function PromoPageContent() {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -250,5 +250,21 @@ export default function PromoPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function PromoPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#041329] text-white px-6 pt-24 pb-28">
+          <div className="max-w-3xl mx-auto text-center text-gray-400">
+            Loading...
+          </div>
+        </main>
+      }
+    >
+      <PromoPageContent />
+    </Suspense>
   );
 }

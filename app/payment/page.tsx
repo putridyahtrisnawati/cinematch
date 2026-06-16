@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 
 import PaymentMethod from "@/components/ui/payment/PaymentMethod";
 import PaymentSummary from "@/components/ui/payment/PaymentSummary";
 
-export default function PaymentPage() {
+function PaymentContent() { 
   const router = useRouter();
   const params = useSearchParams();
 
@@ -304,5 +304,13 @@ export default function PaymentPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentContent />
+    </Suspense>
   );
 }

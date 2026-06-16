@@ -3,7 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 
 type PopupType = "success" | "failed" | "confirm-cancel";
@@ -15,7 +15,7 @@ type Popup = {
   message: string;
 };
 
-export default function PaymentDetail() {
+function PaymentDetailContent() {
   const params = useSearchParams();
   const router = useRouter();
 
@@ -604,5 +604,13 @@ export default function PaymentDetail() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function PaymentDetail() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentDetailContent />
+    </Suspense>
   );
 }

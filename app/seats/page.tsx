@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import SeatGrid from "@/components/ui/seat/SeatGrid";
 import SeatLegend from "@/components/ui/seat/SeatLegend";
 import BookingSummary from "@/components/ui/seat/BookingSummary";
 
-export default function SeatPage() {
+function SeatPageContent() {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -302,5 +302,21 @@ export default function SeatPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SeatPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#041329] text-white px-8 pt-24 pb-12">
+          <div className="max-w-xl mx-auto text-center text-gray-400">
+            Loading...
+          </div>
+        </main>
+      }
+    >
+      <SeatPageContent />
+    </Suspense>
   );
 }
